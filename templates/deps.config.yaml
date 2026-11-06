@@ -1,0 +1,47 @@
+# deps.config.yaml — Dependency Registry
+
+meta:
+  version: "1.0.0"
+  owner: "<team-name>"
+  # refresh_strategy options:
+  #   ttl_only       — time-based staleness only
+  #   hash_only      — commit-hash drift only (needs git ls-remote on each /kb refresh)
+  #   ttl_and_hash   — both checks (recommended)
+  #   manual         — never auto-refresh; human must trigger explicitly
+  refresh_strategy: "ttl_and_hash"
+
+defaults:
+  ttl_days: 7                    # Default staleness threshold in days
+  sub_agent_model: "flash-lite"  # Model for dep extraction sub-agents
+  clone_depth: 1                 # Shallow clone
+  branch: "master"               # Default branch
+
+dependencies: []
+
+# ─── HOW TO ADD A DEPENDENCY ───────────────────────────────────────────────
+#
+# Append a new entry under dependencies: following this template:
+#
+# - name: "<service-name>"
+#   description: "What we use from this service (APIs / topics / contracts)"
+#   gitlab_url: "git@gitlab.example.com:platform/<service-name>.git"
+#   branch: "master"
+#   ttl_days: 7
+#   auth_method: "ssh"            # ssh | pat | service_account
+#
+#   extract:
+#     apis:
+#       - path: "openapi.yaml"           # Path to API spec in the cloned repo
+#         filter_tags: ["tag1", "tag2"]  # Only extract these tags (omit for all)
+#     kafka:
+#       - topic: "topic.name"
+#         schema_path: "schemas/topic.avsc"
+#     contracts:
+#       - path: "proto/service.proto"
+#
+#   kb_path: "deps/<service-name>/"      # Relative to .kb/ root
+#   last_fetched: null                   # Written by sub-agent (ISO8601)
+#   last_commit_hash: null               # Written by sub-agent
+#   force_refresh: false                 # Set true to bypass TTL/hash check once
+#
+# ───────────────────────────────────────────────────────────────────────────
